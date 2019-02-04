@@ -141,6 +141,8 @@
         if (self.tcpSocket == nil) {
             GCDAsyncSocket *tcpSocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
             self.tcpSocket = tcpSocket;
+        }
+        if ([self.tcpSocket isDisconnected]) {
             [self connectTcpSocket];
         }
     }
