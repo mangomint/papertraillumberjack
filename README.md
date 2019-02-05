@@ -43,7 +43,31 @@ Whitespace (if any) in user defined machine and program names will be removed be
 Prior to v0.1.9, PapertrailLumberjack would format the messages with an older syslog format (RFC3164). We now, format them with RFC5424 as default. If you would like to go back to the older format, you can set it on the logger instance.
 
     paperTrailLogger.syslogRFCType = RMSyslogRFCType3164;
-    
+
+## Caveat: messages may be lost, logging may stop entirely
+
+### When using UDP: some messages may be lost
+
+UDP is inherently lossy, and there is no guarantee that the messages will reach the logging host, so expect some log messages to be lost.
+
+### When using TCP: logging may stop entirely
+
+With TCP logging, PaperTrailLumberjack opens a TCP connection when the first log message is sent. It then reuses this connection for later messages. But various issues may cause the connection to drop, and all logging will stop until the app is restarted.
+
+To alleviate this, you need to tell PaperTrailLumberjack to reopen the connection. Since backgrounding of the app (on iOS) or machine going to sleep (on macOS) will always close the connection, a good place to reopen the connection is `applicationWillEnterForeground` (on iOS), **TODO: or ...? (on macOS).** You can also monitor network reachability and reopen the connection when the network comes back up. But be aware that the connection may still drop for other reasons. To tell PaperTrailLumberjack to reopen the connection:
+
+    # In Objective C:
+    [paperTrailLogger performSelector:connectTcpSocket]; // <-------- TODO: confirm this is correct
+
+    # In Swift:
+    paperTrailLogger.perform(Selector(("connectTcpSocket")))
+
+Note that PaperTrailLumberjack does not do any caching or buffering: log messages sent while the connection was down will be lost.
+
+PaperTrailLumberjack also offers an **experimental** auto-reconnect mode, where it will automatically attempt to reopen the connection. Logs sent while the connection is down will still be lost, but logging will automatically resume after the connection has been reestablished. Be aware that it can be resource intensive, since while the connection is down, PaperTrailLumberjack will attempt to reopen the connection for every log message. Under bad network conditions, this might end up taking away network resources from the main app. This feature is experimental, so use it at your own risk. To enable it:
+
+    paperTrailLogger.autoReconnect = YES;
+
 ## Requirements
 
    iOS 8 or later
