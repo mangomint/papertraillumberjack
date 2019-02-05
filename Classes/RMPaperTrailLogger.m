@@ -25,6 +25,7 @@
 @synthesize port = _port;
 @synthesize useTcp = _useTcp;
 @synthesize useTLS = _useTLS;
+@synthesize autoReconnect = _autoReconnect;
 
 @synthesize tcpSocket = _tcpSocket;
 @synthesize udpSocket = _udpSocket;
@@ -40,6 +41,7 @@
         _sharedInstance.logFormatter = logFormatter;
         _sharedInstance.useTcp = YES;
         _sharedInstance.useTLS = YES;
+        _sharedInstance.autoReconnect = NO;
         _sharedInstance.syslogRFCType = RMSyslogRFCType5424;
     });
     
@@ -141,8 +143,11 @@
         if (self.tcpSocket == nil) {
             GCDAsyncSocket *tcpSocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
             self.tcpSocket = tcpSocket;
-        }
-        if ([self.tcpSocket isDisconnected]) {
+            [self connectTcpSocket];
+        } else if ([self.tcpSocket isDisconnected] && self.autoReconnect) {
+#ifdef DEBUG
+            NSLog(@"Socket disconnected, attempting to reconnect.");
+#endif
             [self connectTcpSocket];
         }
     }

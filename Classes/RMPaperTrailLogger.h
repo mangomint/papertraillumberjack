@@ -56,6 +56,12 @@
 @property (nonatomic, assign) BOOL useTLS;
 
 /**
+ Specifies whether we should attempt to reconnect the TCP connection if it disconnected.
+ Default is `NO`. This parameter applies only to TCP connections.
+ */
+@property (nonatomic, assign) BOOL autoReconnect;
+
+/**
 Specifies which RFC to follow for the syslog message format. We default to RFC 3164, so, as not to make a breaking change in newer versions of PapertrailLumberjack.
 */
 @property (nonatomic, assign) RMSyslogRFCType syslogRFCType;
