@@ -30,4 +30,6 @@
  */
 @property (nonatomic, assign) RMSyslogRFCType syslogRFCType;
 
+@property (nonatomic, copy, nullable) NSString* token;
+
 @end
