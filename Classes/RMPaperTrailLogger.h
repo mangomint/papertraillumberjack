@@ -44,6 +44,8 @@
  */
 @property (nonatomic, copy, nullable) NSString* programName;
 
+@property (nonatomic, copy, nullable) NSString* token;
+
 /**
  Specifies whether we should connect via TCP. Default is `NO` (uses UDP)
  */

@@ -17,6 +17,7 @@ static NSString* const RMAppUUIDKey = @"RMAppUUIDKey";
 
 @synthesize machineName=_machineName;
 @synthesize programName=_programName;
+@synthesize token=_token;
 
 -(id) init
 {
@@ -68,9 +69,16 @@ static NSString* const RMAppUUIDKey = @"RMAppUUIDKey";
     NSString* function = [self formatFunctionName:logMessage.function];
     NSString* header = [NSString stringWithFormat:@"<%ld>1 %@ %@ %@ - -", (long) priValue, timestamp, self.machineName, self.programName];
     
+    // The "@41058" "namespace" to use for the token data in this structured data section is based on what papertrail's remote_syslog2 library
+    // itself does: https://github.com/papertrail/remote_syslog2/blob/c4ad7d941e6bb3a55fada3fe5237aa3e58ce30af/syslog/packet.go#L33
+    NSString* structuredData = [NSString stringWithFormat:@"[%@@41058]", self.token];
+    if (structuredData == nil) {
+        structuredData = @"-";
+    }
+    
     NSString* message = [NSString stringWithFormat:@"\357\273\277%@ %@@%@:%lu %@", logMessage.threadID, logMessage.fileName, function, (unsigned long) logMessage.line, logMessage.message];
     
-    NSString* log = [NSString stringWithFormat:@"%@ - %@", header, message];
+    NSString* log = [NSString stringWithFormat:@"%@ %@ %@", header, structuredData, message];
     
     return log;
 }

@@ -71,6 +71,15 @@
     }
 }
 
+-(void) setToken:(NSString *)token
+{
+    _token = token;
+    if ([self.logFormatter isKindOfClass:[RMSyslogFormatter class]]) {
+        RMSyslogFormatter* syslogFormatter = (RMSyslogFormatter*)_logFormatter;
+        syslogFormatter.token = token;
+    }
+}
+
 -(void) setSyslogRFCType:(RMSyslogRFCType)syslogRFCType
 {
     _syslogRFCType = syslogRFCType;
