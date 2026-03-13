@@ -19,3 +19,4 @@ FOUNDATION_EXPORT const unsigned char PaperTrailLumberjackVersionString[];
 
 #import "RMPaperTrailLogger.h"
 #import "RMSyslogFormats.h"
+#import "RMSyslogFormatter.h"
